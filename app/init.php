@@ -1,20 +1,15 @@
 <?php
-define('BASEURL', 'http://localhost/proyek-dev/public');
-// var_dump(BASEURL);
-// exit;
 
-session_start();
+// Load Constants
+require_once 'core/Constants.php';
 
-// Tambahkan pengecekan akses halaman, misalnya:
-if (!isset($_SESSION['user']) && $_SERVER['REQUEST_URI'] !== '/auth') {
-    header('Location: ' . BASEURL . '/auth');
-    exit;
-}
+// Load Database
+require_once 'core/Database.php';
 
+// Load Core MVC Components
+require_once 'core/App.php';
+require_once 'core/Controller.php';
+require_once 'core/Model.php';
 
-require_once '../app/core/App.php';
-require_once '../app/core/Controller.php';
-
-require_once '../app/config/config.php';
-
-require_once '../vendor/autoload.php';
+// Load Config (Optional)
+require_once 'config/config.php';
