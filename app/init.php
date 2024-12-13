@@ -13,3 +13,11 @@ require_once 'core/Model.php';
 
 // Load Config (Optional)
 require_once 'config/config.php';
+
+// Load Request, Response, Kernel
+require_once 'core/Request.php';
+require_once 'core/Response.php';
+require_once 'core/Kernel.php';
+
+//Load Session handler
+require_once 'core/Session.php';
