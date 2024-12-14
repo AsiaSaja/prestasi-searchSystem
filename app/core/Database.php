@@ -53,7 +53,7 @@ class Database {
 
     public function execute()
     {
-        $this->stmt->execute();
+        return $this->stmt->execute();
     }
 
     public function resultSet()
@@ -71,5 +71,10 @@ class Database {
     public function rowCount()
     {
         return $this->stmt->rowCount();
+    }
+
+    public function lastInsertId()
+    {
+        return $this->dbh->lastInsertId();
     }
 }

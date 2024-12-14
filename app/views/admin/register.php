@@ -95,7 +95,7 @@
         <?php endif; ?>
 
         <!-- Form Registrasi -->
-        <form action="<?= BASEURL; ?>/admin/register" method="POST">
+        <form action="<?= BASEURL; ?>/admin/createAccount" method="POST">
             <div>
                 <label for="username">Akun Pengguna</label>
                 <input 
@@ -126,8 +126,8 @@
                 <label for="confirm_password">Konfirmasi Password</label>
                 <input 
                     type="password" 
-                    id="confirm_password" 
-                    name="confirm_password" 
+                    id="confirmPassword" 
+                    name="confirmPassword" 
                     placeholder="Konfirmasi Password" 
                     required 
                     minlength="6" 
