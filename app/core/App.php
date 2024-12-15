@@ -25,8 +25,10 @@ class App {
         // method
         if (isset($url[1])) {
             if(method_exists($this->controller, $url[1])){
-                $this->method =$url[1];
+                $this->method = $url[1];
                 unset($url[1]);
+            } else {
+                echo "Method tidak ada atau bermasalah";
             }
         }
 
