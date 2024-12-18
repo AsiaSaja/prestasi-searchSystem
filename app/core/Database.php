@@ -77,4 +77,14 @@ class Database {
     {
         return $this->dbh->lastInsertId();
     }
+
+    public function error()
+    {
+        return $this->stmt->errorCode();
+    }
+
+    public function errorInfo()
+    {
+        return $this->stmt->errorInfo();
+    }
 }

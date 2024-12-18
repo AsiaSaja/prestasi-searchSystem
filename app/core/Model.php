@@ -10,6 +10,27 @@ class Model {
         $this->db = new Database();
     }
 
+    public function executeQuery($sql)
+    {
+        // Prepare and execute the query
+        try {
+            // Query execution
+            $this->db->query($sql);
+            
+            // Check if the query was successful
+            if ($this->db->error()) {
+                throw new Exception('Database query failed: ' . implode(', ', $this->db->errorInfo()));
+            }
+
+            // Return the fetched results
+            return $this->db->resultSet(); // Fetch all results
+        } catch (Exception $e) {
+            // Log the error message
+            error_log($e->getMessage());
+            return []; // Return an empty array in case of failure
+        }
+    }
+
     public function getAll($where = null)
     {
         $query = 'SELECT * FROM ' . $this->table;

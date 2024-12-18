@@ -5,8 +5,23 @@ class Prestasi_model extends Model {
 
     public function getAllAchievements()
     {
-        return $this->getAll();
+        $sql = "
+            SELECT achievements.id, achievements.student_id, achievements.competition_id, achievements.achievement, 
+                   students.name AS student_name, competitions.name AS competition_name
+            FROM achievements
+            LEFT JOIN students ON achievements.student_id = students.id
+            LEFT JOIN competitions ON achievements.competition_id = competitions.id
+        ";
+
+        // Use the executeQuery method from Model class to fetch results
+        $result = $this->executeQuery($sql);
+
+        // var_dump($result);
+
+        return $result;
     }
+    
+    
 
     public function findAchievementById($id)
     {
