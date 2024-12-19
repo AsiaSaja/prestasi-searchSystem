@@ -33,14 +33,18 @@
     </div>
 
     <!-- Recent Logs -->
-    <div class="row">
+    <!-- <div class="row">
         <div class="col-12">
             <h3>Recent Logs</h3>
             <?php if (!empty($data['recentLogs'])): ?>
                 <ul class="list-group">
                     <?php foreach ($data['recentLogs'] as $log): ?>
                         <li class="list-group-item">
-                            <?= htmlspecialchars($log['message']); ?> - <small><?= htmlspecialchars($log['timestamp']); ?></small>
+                            <strong>Action:</strong> <?= htmlspecialchars($log['action_type']); ?> <br>
+                            <strong>Record ID:</strong> <?= htmlspecialchars($log['record_id']); ?> <br>
+                            <strong>Table:</strong> <?= htmlspecialchars($log['table_name']); ?> <br>
+                            <strong>Description:</strong> <?= htmlspecialchars($log['description']); ?> <br>
+                            <small><strong>Timestamp:</strong> <?= htmlspecialchars($log['created_at']); ?></small>
                         </li>
                     <?php endforeach; ?>
                 </ul>
@@ -49,6 +53,6 @@
             <?php endif; ?>
         </div>
     </div>
-</div>
+</div> -->
 
 <?php require_once '../app/views/templates/admin-footer.php'; ?>

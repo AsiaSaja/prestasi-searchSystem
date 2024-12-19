@@ -1,8 +1,20 @@
-<?php require_once '../app/views/templates/admin-header.php'; ?>
+<?php require_once '../app/views/templates/admin-header.php'; 
+
+// extract($data); 
+?>
+
+
+
+<!-- <pre><?php print_r($data); ?></pre> -->
+<!-- <pre><?php print_r($achievements); ?></pre> -->
+<!-- <pre><?php print_r($data['achievements']); ?></pre> -->
+
 
 <div class="container mt-4">
     <h2>Manage Achievements</h2>
     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addAchievementModal">Add Achievement</button>
+
+    
 
     <table class="table table-striped table-hover">
         <thead>
@@ -11,12 +23,14 @@
                 <th>Student Name</th>
                 <th>Competition Name</th>
                 <th>Achievement</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            <?php if (isset($achievements) && !empty($achievements)): ?>
-                <?php foreach ($achievements as $achievement): ?>
+            <?php if (isset($data['achievements']) && !empty($data['achievements'])): ?>
+                <?php foreach ($data['achievements'] as $achievement): ?>
                     <tr>
+                        <td><?= htmlspecialchars($achievement['id']); ?></td>
                         <td><?= htmlspecialchars($achievement['student_name']); ?></td>
                         <td><?= htmlspecialchars($achievement['competition_name']); ?></td>
                         <td><?= htmlspecialchars($achievement['achievement']); ?></td>

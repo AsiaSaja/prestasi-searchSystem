@@ -9,6 +9,7 @@ class Admin extends Controller {
     private $mahasiswaModel;
     private $kompetisiModel;
     private $prestasiModel;
+    private $logModel;
 
     public function __construct() {
         $this->response = new Response();
@@ -18,6 +19,7 @@ class Admin extends Controller {
         $this->mahasiswaModel = $this->model('Mahasiswa_model');
         $this->kompetisiModel = $this->model('Kompetisi_model');
         $this->prestasiModel = $this->model('Prestasi_model');
+        $this->logModel = $this->model('LogModel');
 
     }
     
@@ -116,7 +118,7 @@ class Admin extends Controller {
         view('admin/dashboard', $data);
 
 
-        // view('admin/dashboard');
+        
 
     }
 
@@ -154,6 +156,10 @@ class Admin extends Controller {
         // Validate the input and save to the database
         if ($this->mahasiswaModel->insert($fields, $values)) {
             // Redirect to students list after successful insertion
+            // $studentId = $this->mahasiswaModel->getLastInsertId();
+
+            // $this->logModel->logAction('create', $studentId, 'students', "Created new student with NIM $nim");
+
             redirect('/admin/students');
         } else {
             redirect('/admin/createStudent?error=Failed to add student');
@@ -182,6 +188,8 @@ class Admin extends Controller {
             // Call the model's update method to update the student
             if ($this->mahasiswaModel->update($set, $where)) {
                 // If update is successful, redirect to the student list
+
+                // $this->logModel->logAction('update', $id, 'students', "Updated student with ID $id");
                 redirect('/admin/students');
             } else {
                 // If there was an error, redirect back to the edit page with an error message
@@ -206,6 +214,8 @@ class Admin extends Controller {
 
         // Call the model's delete method
         if ($this->mahasiswaModel->delete("id = $id")) {
+
+            // $this->logModel->logAction('delete', $id, 'students', "Deleted student with ID $id");
             $this->response->redirect('/proyek-dev/public/admin/students');
             
         } else {
@@ -234,11 +244,15 @@ class Admin extends Controller {
         $name = $this->request->getParam('name');
         $year = $this->request->getParam('year');
         $details = $this->request->getParam('details');
+        $category = $this->request->getParam('category');
     
-        $fields = 'name, year, details';
-        $values = "'$name', '$year', '$details'";
+        $fields = 'name, year, details, category';
+        $values = "'$name', '$year', '$details', '$category'";
     
         if ($this->kompetisiModel->insert($fields, $values)) {
+            // $competitionId = $this->kompetisiModel->getLastInsertId();
+
+            // $this->logModel->logAction('create', $competitionId, 'competitions', "Created new competition with name $name");
             redirect('/admin/competitions');
         } else {
             redirect('/admin/createCompetition?error=Failed to add competition');
@@ -257,11 +271,12 @@ class Admin extends Controller {
             $name = $this->request->getParam('name');
             $year = $this->request->getParam('year');
             $details = $this->request->getParam('details');
+            $category = $this->request->getParam('category');
 
-            error_log("Name: $name, Year: $year, Details: $details");
+            error_log("Name: $name, Year: $year, Details: $details, Category: $category");
     
             // Prepare the SET part of the SQL UPDATE query
-            $set = "name = '$name', year = '$year', details = '$details'";
+            $set = "name = '$name', year = '$year', details = '$details', category = '$category'";
     
             // Prepare the WHERE clause to identify the competition to be updated
             $where = "id = $id";
@@ -269,6 +284,8 @@ class Admin extends Controller {
             // Call the model's update method to update the competition
             if ($this->kompetisiModel->update($set, $where)) {
                 // If update is successful, redirect to the competition list
+                // $this->logModel->logAction('update', $id, 'competitions', "Updated competition with ID $id");
+
                 redirect('/admin/competitions');
             } else {
                 // If there was an error, redirect back to the edit page with an error message
@@ -277,6 +294,7 @@ class Admin extends Controller {
         } else {
             // If it's a GET request, display the competition edit form with the current competition data
             $competition = $this->kompetisiModel->find("id = $id");
+            
     
             // Check if the competition exists
             if (!$competition) {
@@ -294,6 +312,9 @@ class Admin extends Controller {
         }
     
         if ($this->kompetisiModel->delete("id = $id")) {
+            // $this->logModel->logAction('delete', $id, 'competitions', "Deleted competition with ID $id");
+
+
             redirect('/admin/competitions');
         } else {
             redirect('/admin/competitions?error=Failed to delete competition');
@@ -320,6 +341,9 @@ class Admin extends Controller {
             'students' => $students,
             'competitions' => $competitions,
         ];
+        // var_dump($data['achievements']);
+        // die();
+
 
         // Pass data to the view
         view('admin/achievements', $data);
@@ -346,6 +370,10 @@ class Admin extends Controller {
         ];
 
         if ($this->prestasiModel->addAchievement($data)) {
+
+            // $achievementId = $this->prestasiModel->getLastInsertId();
+
+            // $this->logModel->logAction('create', $achievementId, 'achievements', "Created new achievement for student ID $student_id in competition ID $competition_id");            
             redirect('/admin/achievements');
         } else {
             redirect('/admin/achievements?error=Failed to add achievement');
@@ -371,12 +399,15 @@ class Admin extends Controller {
     
         $data = [
             'judul' => 'Edit Achievement',
-            'achievement' => $achievement[0], // assuming findAchievementById returns an array
+            'achievement' => $achievement, // assuming findAchievementById returns an array
             'students' => $students,
             'competitions' => $competitions,
         ];
+
+        $viewPath = 'admin/editAchievement';
+        var_dump($viewPath);
     
-        view('admin/editAchievement', $data);
+        view($viewPath, $data);
     }
     
 
@@ -388,6 +419,9 @@ class Admin extends Controller {
         }
 
         if ($this->prestasiModel->deleteAchievement($id)) {
+
+            // $this->logModel->logAction('delete', $id, 'achievements', "Deleted achievement with ID $id");
+
             redirect('/admin/achievements');
         } else {
             redirect('/admin/achievements?error=Failed to delete achievement');

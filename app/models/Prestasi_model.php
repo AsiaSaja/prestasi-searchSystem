@@ -50,9 +50,18 @@ class Prestasi_model extends Model {
         return $this->delete("id = $id");
     }
 
-    public function getCount() {
-        $sql = "SELECT COUNT(*) as count FROM achievements";
-        $result = $this->db->query($sql);
-        return $result ? $result[0]['count'] : 0;
+    public function getCount()
+    {
+        $sql = "SELECT COUNT(*) as count FROM " . $this->table;
+        
+        // Execute the query
+        $this->db->query($sql);
+        
+        // Fetch the result (single row)
+        $result = $this->db->single(); // single() returns the first row as an associative array
+
+        // Check if the result is valid and return the count, otherwise return 0
+        return $result ? $result['count'] : 0;
     }
+
 }
