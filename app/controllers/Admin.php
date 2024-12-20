@@ -170,7 +170,7 @@ class Admin extends Controller {
         if (!$this->session->isLoggedIn()) {
             redirect('/admin/login');
         }
-
+    
         if ($this->request->getMethod() == 'POST') {
             // Collect form data using the Request class
             $name = $this->request->getParam('name');
@@ -178,6 +178,14 @@ class Admin extends Controller {
             $email = $this->request->getParam('email');
             $program = $this->request->getParam('program');
             $year = $this->request->getParam('year');
+    
+            // Check if the new 'nim' is already taken by another student (excluding the current student)
+            $existingStudent = $this->mahasiswaModel->find("nim = '$nim' AND id != $id");
+            if ($existingStudent) {
+                // If a student with the same nim exists, show an error
+                redirect('/admin/editStudent/'.$id.'?error=Duplicate nim, please choose another one');
+                return;
+            }
     
             // Prepare the SET part of the SQL UPDATE query
             $set = "name = '$name', nim = '$nim', email = '$email', program = '$program', year = '$year'";
@@ -188,8 +196,6 @@ class Admin extends Controller {
             // Call the model's update method to update the student
             if ($this->mahasiswaModel->update($set, $where)) {
                 // If update is successful, redirect to the student list
-
-                // $this->logModel->logAction('update', $id, 'students', "Updated student with ID $id");
                 redirect('/admin/students');
             } else {
                 // If there was an error, redirect back to the edit page with an error message
@@ -200,10 +206,10 @@ class Admin extends Controller {
             $student = $this->mahasiswaModel->find("id = $id");
     
             // Pass the student data to the view for editing
-            view('admin/editStudent', ['student' => $student]);
+            view('admin/students', ['student' => $student]);
         }
-    
     }
+    
 
     public function deleteStudent($id) {
         if (!$this->session->isLoggedIn()) {
@@ -386,30 +392,34 @@ class Admin extends Controller {
         if (!$this->session->isLoggedIn()) {
             redirect('/admin/login');
         }
+        
+        if ($this->request->getMethod() == 'POST') {
+            // Collect form data from the request
+            $student_id = $this->request->getParam('student_id');
+            $competition_id = $this->request->getParam('competition_id');
+            // Add other fields you need to update
     
-        // Fetch the achievement, student, and competition data
-        $achievement = $this->prestasiModel->findAchievementById($id);
-        $students = $this->mahasiswaModel->getAllStudents();
-        $competitions = $this->kompetisiModel->getAllCompetitions();
+            // Prepare the SET part of the SQL UPDATE query
+            $set = "student_id = '$student_id', competition_id = '$competition_id'";
+            // Add other fields to update
+            
+            // Prepare the WHERE clause
+            $where = "id = $id";
     
-        if (!$achievement) {
-            // Handle the case where the achievement doesn't exist
+            // Call the model's update method
+            if ($this->prestasiModel->update($set, $where)) {
+                // If update is successful, redirect to the achievements list
+                redirect('/admin/achievements');
+            } else {
+                // If there was an error, redirect back with an error message
+                redirect('/admin/achievements?error=Failed to update achievement');
+            }
+        } else {
+            // For GET requests, just redirect back to achievements page
+            // because we're using a modal for editing
             redirect('/admin/achievements');
         }
-    
-        $data = [
-            'judul' => 'Edit Achievement',
-            'achievement' => $achievement, // assuming findAchievementById returns an array
-            'students' => $students,
-            'competitions' => $competitions,
-        ];
-
-        $viewPath = 'admin/editAchievement';
-        var_dump($viewPath);
-    
-        view($viewPath, $data);
-    }
-    
+    } 
 
     // Delete achievement
     public function deleteAchievement($id)

@@ -64,4 +64,34 @@ class Prestasi_model extends Model {
         return $result ? $result['count'] : 0;
     }
 
+
+    public function search($keyword, $category = null) {
+        // Build the query to search for achievements
+        $query = "SELECT 
+                    achievements.id, 
+                    students.name AS student_name, 
+                    competitions.name AS competition_name, 
+                    achievements.achievement 
+                  FROM achievements
+                  INNER JOIN students ON achievements.student_id = students.id
+                  INNER JOIN competitions ON achievements.competition_id = competitions.id
+                  WHERE competitions.name LIKE :keyword";
+
+        // Filter by category if provided
+        if ($category) {
+            $query .= " AND competitions.category = :category";
+        }
+
+        // Prepare the query
+        $this->db->query($query);
+        
+        // Bind parameters
+        $this->db->bind(':keyword', '%' . $keyword . '%');
+        if ($category) {
+            $this->db->bind(':category', $category);
+        }
+
+        // Execute the query and return the results
+        return $this->db->resultSet();
+    }
 }

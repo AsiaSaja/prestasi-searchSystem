@@ -1,20 +1,8 @@
-<?php require_once '../app/views/templates/admin-header.php'; 
-
-// extract($data); 
-?>
-
-
-
-<!-- <pre><?php print_r($data); ?></pre> -->
-<!-- <pre><?php print_r($achievements); ?></pre> -->
-<!-- <pre><?php print_r($data['achievements']); ?></pre> -->
-
+<?php require_once '../app/views/templates/admin-header.php'; ?>
 
 <div class="container mt-4">
     <h2>Manage Achievements</h2>
     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addAchievementModal">Add Achievement</button>
-
-    
 
     <table class="table table-striped table-hover">
         <thead>
@@ -35,8 +23,16 @@
                         <td><?= htmlspecialchars($achievement['competition_name']); ?></td>
                         <td><?= htmlspecialchars($achievement['achievement']); ?></td>
                         <td>
-                            <a href="<?= BASEURL; ?>/admin/editAchievement/<?= $achievement['id']; ?>" class="btn btn-warning">Edit</a>
-                            <a href="<?= BASEURL; ?>/admin/deleteAchievement/<?= $achievement['id']; ?>" class="btn btn-danger">Delete</a>
+                            <!-- Edit Button (Trigger the modal) -->
+                            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editAchievementModal"
+                                    data-id="<?= $achievement['id']; ?>"
+                                    data-student-id="<?= $achievement['student_id']; ?>"
+                                    data-competition-id="<?= $achievement['competition_id']; ?>"
+                                    data-achievement="<?= htmlspecialchars($achievement['achievement']); ?>">
+                                Edit
+                            </button>
+                            <!-- Delete Button (Trigger the delete action) -->
+                            <button class="btn btn-danger" onclick="deleteAchievement(<?= $achievement['id']; ?>)">Delete</button>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -47,7 +43,6 @@
             <?php endif; ?>
         </tbody>
     </table>
-
 </div>
 
 <!-- Modal for Adding Achievement -->
@@ -91,42 +86,37 @@
         </form>
     </div>
 </div>
+
 <!-- Modal for Editing Achievement -->
 <div class="modal fade" id="editAchievementModal" tabindex="-1" aria-labelledby="editAchievementModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form action="<?= BASEURL; ?>/admin/editAchievement" method="POST">
+        <form id="editAchievementForm" method="POST">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editAchievementModalLabel">Edit Achievement</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+                </div>                
                 <div class="modal-body">
                     <input type="hidden" id="editId" name="id">
                     <div class="mb-3">
-                        <label for="editStudent_id" class="form-label">Student</label>
-                        <select class="form-control" id="editStudent_id" name="student_id" required>
-                            <option value="">Select Student</option>
+                        <label for="editStudent" class="form-label">Student</label>
+                        <select class="form-control" id="editStudent" name="student_id" required>
                             <?php foreach ($data['students'] as $student): ?>
-                                <option value="<?= $student['id']; ?>" <?= ($student['id'] == $data['achievement']['student_id']) ? 'selected' : ''; ?>>
-                                    <?= $student['name']; ?>
-                                </option>
+                                <option value="<?= $student['id'] ?>"><?= $student['name'] ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="editCompetition_id" class="form-label">Competition</label>
-                        <select class="form-control" id="editCompetition_id" name="competition_id" required>
-                            <option value="">Select Competition</option>
+                        <label for="editCompetition" class="form-label">Competition</label>
+                        <select class="form-control" id="editCompetition" name="competition_id" required>
                             <?php foreach ($data['competitions'] as $competition): ?>
-                                <option value="<?= $competition['id']; ?>" <?= ($competition['id'] == $data['achievement']['competition_id']) ? 'selected' : ''; ?>>
-                                    <?= $competition['name']; ?>
-                                </option>
+                                <option value="<?= $competition['id'] ?>"><?= $competition['name'] ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label for="editAchievement" class="form-label">Achievement</label>
-                        <input type="text" class="form-control" id="editAchievement" name="achievement" value="<?= $data['achievement']['achievement']; ?>" required>
+                        <input type="text" class="form-control" id="editAchievement" name="achievement" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -137,23 +127,25 @@
         </form>
     </div>
 </div>
+
 <script>
     // Populate the edit modal with the data
-    const editAchievementModal = document.getElementById('editAchievementModal');
-    editAchievementModal.addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget; // Button that triggered the modal
+    document.getElementById('editAchievementModal').addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
         const achievementId = button.getAttribute('data-id');
         const studentId = button.getAttribute('data-student-id');
         const competitionId = button.getAttribute('data-competition-id');
         const achievement = button.getAttribute('data-achievement');
 
-        // Populate the form fields
         document.getElementById('editId').value = achievementId;
-        document.getElementById('editStudent_id').value = studentId;
-        document.getElementById('editCompetition_id').value = competitionId;
+        document.getElementById('editStudent').value = studentId;
+        document.getElementById('editCompetition').value = competitionId;
         document.getElementById('editAchievement').value = achievement;
-    });
 
+        // Update the form action dynamically based on the ID
+        const formAction = "<?= BASEURL; ?>/admin/editAchievement/" + achievementId;
+        document.getElementById('editAchievementForm').action = formAction;
+    });
 
     // Delete achievement
     function deleteAchievement(id) {
