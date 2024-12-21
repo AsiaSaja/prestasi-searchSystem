@@ -172,41 +172,34 @@ class Admin extends Controller {
         }
     
         if ($this->request->getMethod() == 'POST') {
-            // Collect form data using the Request class
             $name = $this->request->getParam('name');
             $nim = $this->request->getParam('nim');
             $email = $this->request->getParam('email');
             $program = $this->request->getParam('program');
             $year = $this->request->getParam('year');
     
-            // Check if the new 'nim' is already taken by another student (excluding the current student)
-            $existingStudent = $this->mahasiswaModel->find("nim = '$nim' AND id != $id");
-            if ($existingStudent) {
-                // If a student with the same nim exists, show an error
-                redirect('/admin/editStudent/'.$id.'?error=Duplicate nim, please choose another one');
-                return;
-            }
+            try {
+                // Check for duplicate NIM
+                $existingStudent = $this->mahasiswaModel->find("nim = '$nim' AND id != $id");
+                if ($existingStudent) {
+                    redirect('/admin/students?error=NIM already exists');
+                    return;
+                }
     
-            // Prepare the SET part of the SQL UPDATE query
-            $set = "name = '$name', nim = '$nim', email = '$email', program = '$program', year = '$year'";
+                $set = "name = '$name', nim = '$nim', email = '$email', program = '$program', year = '$year'";
+                $where = "id = $id";
     
-            // Prepare the WHERE clause to identify the student to be updated
-            $where = "id = $id";
-    
-            // Call the model's update method to update the student
-            if ($this->mahasiswaModel->update($set, $where)) {
-                // If update is successful, redirect to the student list
-                redirect('/admin/students');
-            } else {
-                // If there was an error, redirect back to the edit page with an error message
-                redirect('/admin/editStudent/'.$id.'?error=Failed to update student');
+                if ($this->mahasiswaModel->update($set, $where)) {
+                    redirect('/admin/students?success=Student updated successfully');
+                } else {
+                    redirect('/admin/students?error=Failed to update student');
+                }
+            } catch (PDOException $e) {
+                redirect('/admin/students?error=Database error: ' . $e->getMessage());
             }
         } else {
-            // If it's a GET request, display the student edit form with the current student data
-            $student = $this->mahasiswaModel->find("id = $id");
-    
-            // Pass the student data to the view for editing
-            view('admin/students', ['student' => $student]);
+            // For GET requests, just redirect back to the students page
+            redirect('/admin/students');
         }
     }
     

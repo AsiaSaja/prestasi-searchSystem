@@ -65,33 +65,99 @@ class Prestasi_model extends Model {
     }
 
 
-    public function search($keyword, $category = null) {
-        // Build the query to search for achievements
-        $query = "SELECT 
-                    achievements.id, 
-                    students.name AS student_name, 
-                    competitions.name AS competition_name, 
-                    achievements.achievement 
-                  FROM achievements
-                  INNER JOIN students ON achievements.student_id = students.id
-                  INNER JOIN competitions ON achievements.competition_id = competitions.id
-                  WHERE competitions.name LIKE :keyword";
+    // In Prestasi_model.php
 
-        // Filter by category if provided
-        if ($category) {
-            $query .= " AND competitions.category = :category";
+    // In Prestasi_model.php
+    public function searchAchievement($keyword = '') 
+    {
+        // Only proceed with search if we have a non-empty keyword
+        if (!empty(trim($keyword))) {
+            $keyword = htmlspecialchars(trim($keyword));
+            
+            $sql = "
+                SELECT 
+                    a.id,
+                    a.achievement,
+                    s.name AS student_name,
+                    c.name AS competition_name,
+                    c.year AS competition_year
+                FROM achievements a
+                LEFT JOIN students s ON a.student_id = s.id
+                LEFT JOIN competitions c ON a.competition_id = c.id
+                WHERE 
+                    a.achievement LIKE :keyword OR
+                    s.name LIKE :keyword OR
+                    c.name LIKE :keyword
+                ORDER BY c.year DESC, s.name ASC
+            ";
+            
+            try {
+                $this->db->query($sql);
+                $this->db->bind(':keyword', '%' . $keyword . '%');
+    
+                // Log the final query to check if it's properly formatted
+                error_log("Executing Query: " . $sql);
+                
+                $results = $this->db->resultSet();
+                
+                // Log the results count
+                error_log("Search Results Count: " . count($results));
+    
+                return $results;
+            } catch (Exception $e) {
+                error_log("Search error: " . $e->getMessage());
+                return [];
+            }
         }
-
-        // Prepare the query
-        $this->db->query($query);
         
-        // Bind parameters
-        $this->db->bind(':keyword', '%' . $keyword . '%');
-        if ($category) {
-            $this->db->bind(':category', $category);
-        }
+        return []; // Return empty array if no keyword
+    }
+    
 
-        // Execute the query and return the results
-        return $this->db->resultSet();
+    // Helper method to log searches
+    private function logSearch($keyword, $resultCount) 
+    {
+        $sql = "
+            INSERT INTO search_logs (
+                keyword, 
+                result_count, 
+                search_timestamp
+            ) VALUES (
+                :keyword,
+                :count,
+                NOW()
+            )
+        ";
+        
+        try {
+            $this->db->query($sql);
+            $this->db->bind(':keyword', $keyword);
+            $this->db->bind(':count', $resultCount);
+            $this->db->execute();
+        } catch (Exception $e) {
+            error_log("Failed to log search: " . $e->getMessage());
+        }
+    }
+
+    // Method to get search suggestions based on popular searches
+    public function getSearchSuggestions($partial_keyword) 
+    {
+        $sql = "
+            SELECT DISTINCT keyword 
+            FROM search_logs 
+            WHERE keyword LIKE :partial 
+            GROUP BY keyword 
+            ORDER BY COUNT(*) DESC 
+            LIMIT 5
+        ";
+        
+        try {
+            $this->db->query($sql);
+            $this->db->bind(':partial', $partial_keyword . '%');
+            return $this->db->resultSet();
+        } catch (Exception $e) {
+            error_log("Suggestion error: " . $e->getMessage());
+            return [];
+        }
     }
 }

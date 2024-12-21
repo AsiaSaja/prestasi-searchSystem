@@ -13,7 +13,7 @@
             <tr>
                 <th>#</th>
                 <th>NIM</th>
-                <th>Name</th>
+                <th>Nama</th>
                 <th>Email</th>
                 <th>Prodi</th>
                 <th>Angkatan</th>
@@ -31,7 +31,15 @@
                     <td><?= $student['year']; ?></td>
                     <td>
                         <!-- Edit Button -->
-                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editStudentModal" data-id="<?= $student['id']; ?>" data-nim="<?= $student['nim']; ?>" data-name="<?= $student['name']; ?>" data-email="<?= $student['email']; ?>" data-program="<?= $student['program']; ?>" data-year="<?= $student['year']; ?>">Edit</button>
+                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editStudentModal"
+                            data-id="<?= $student['id']; ?>" 
+                            data-nim="<?= $student['nim']; ?>" 
+                            data-name="<?= $student['name']; ?>" 
+                            data-email="<?= $student['email']; ?>" 
+                            data-program="<?= $student['program']; ?>" 
+                            data-year="<?= $student['year']; ?>">
+                            Edit
+                        </button>
                         <!-- Delete Button -->
                         <button class="btn btn-danger" onclick="deleteStudent(<?= $student['id']; ?>)">Delete</button>
                     </td>
@@ -56,7 +64,7 @@
                         <input type="text" class="form-control" id="nim" name="nim" required>
                     </div>
                     <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
+                        <label for="name" class="form-label">Nama</label>
                         <input type="text" class="form-control" id="name" name="name" required>
                     </div>
                     <div class="mb-3">
@@ -90,14 +98,14 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="<?= BASEURL; ?>/admin/editStudent/<?= $student['id']; ?>" method="POST">
+                <form id="editStudentForm" method="POST">
                     <input type="hidden" id="editId" name="id">
                     <div class="mb-3">
                         <label for="editNim" class="form-label">NIM</label>
                         <input type="text" class="form-control" id="editNim" name="nim" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editName" class="form-label">Name</label>
+                        <label for="editName" class="form-label">Nama</label>
                         <input type="text" class="form-control" id="editName" name="name" required>
                     </div>
                     <div class="mb-3">
@@ -123,24 +131,26 @@
 </div>
 
 <script>
-    // Set data in modal for editing
+    // Populate the edit form with data when modal is shown
     const editStudentModal = document.getElementById('editStudentModal');
     editStudentModal.addEventListener('show.bs.modal', function (event) {
         const button = event.relatedTarget;
-        document.getElementById('editId').value = button.getAttribute('data-id');
+
+        // Extract data from the button
+        const studentId = button.getAttribute('data-id');
+        const form = document.getElementById('editStudentForm');
+        
+        // Set the action attribute of the form
+        form.action = '<?= BASEURL; ?>/admin/editStudent/' + studentId;
+
+        // Populate the form fields
+        document.getElementById('editId').value = studentId;
         document.getElementById('editNim').value = button.getAttribute('data-nim');
         document.getElementById('editName').value = button.getAttribute('data-name');
         document.getElementById('editEmail').value = button.getAttribute('data-email');
         document.getElementById('editProgram').value = button.getAttribute('data-program');
         document.getElementById('editYear').value = button.getAttribute('data-year');
     });
-
-    // Delete Student (placeholder, implement with AJAX or form submit)
-    function deleteStudent(id) {
-        if (confirm('Are you sure you want to delete this student?')) {
-            window.location.href = '<?= BASEURL; ?>/admin/deleteStudent/' + id;
-        }
-    }
 </script>
 
 <?php require_once '../app/views/templates/admin-footer.php'; ?>

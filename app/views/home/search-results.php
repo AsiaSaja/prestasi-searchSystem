@@ -3,22 +3,39 @@
 <div class="container mt-5">
     <h2 class="text-primary mb-5">Search Results</h2>
 
-    <?php if (empty($results)): ?>
-        <p>No results found for your search criteria.</p>
-    <?php else: ?>
-        <div class="row">
+    <?php if (!empty($results)): ?>
+        <ul>
             <?php foreach ($results as $result): ?>
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title"><?= htmlspecialchars($result['student_name']) ?></h5>
-                            <p class="card-text">Competition: <?= htmlspecialchars($result['competition_name']) ?></p>
-                            <p class="card-text">Achievement: <?= htmlspecialchars($result['achievement']) ?></p>
-                        </div>
-                    </div>
-                </div>
+                <li>
+                    <strong><?= htmlspecialchars($result['student_name']); ?></strong> 
+                    achieved in <strong><?= htmlspecialchars($result['competition_name']); ?></strong> 
+                    with achievement: <?= htmlspecialchars($result['achievement']); ?>
+                </li>
             <?php endforeach; ?>
-        </div>
+        </ul>
+
+        <!-- Pagination Links -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <li class="page-item <?= $page == 1 ? 'disabled' : '' ?>">
+                    <a class="page-link" href="<?= url('home/search?page=' . ($page - 1) . '&keyword=' . $keyword . '&category=' . $category) ?>" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <li class="page-item <?= $page == $i ? 'active' : '' ?>">
+                        <a class="page-link" href="<?= url('home/search?page=' . $i . '&keyword=' . $keyword . '&category=' . $category) ?>"><?= $i ?></a>
+                    </li>
+                <?php endfor; ?>
+                <li class="page-item <?= $page == $totalPages ? 'disabled' : '' ?>">
+                    <a class="page-link" href="<?= url('home/search?page=' . ($page + 1) . '&keyword=' . $keyword . '&category=' . $category) ?>" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    <?php else: ?>
+        <p>No results found for your search.</p>
     <?php endif; ?>
 </div>
 

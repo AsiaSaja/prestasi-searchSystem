@@ -9,7 +9,7 @@
         <div class="col-md-4">
             <div class="card text-white bg-primary mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">Students</h5>
+                    <h5 class="card-title">Mahasiswa</h5>
                     <p class="card-text">Total: <?= $data['studentCount'] ?? 0; ?></p>
                 </div>
             </div>
@@ -17,7 +17,7 @@
         <div class="col-md-4">
             <div class="card text-white bg-success mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">Competitions</h5>
+                    <h5 class="card-title">Kompetisi</h5>
                     <p class="card-text">Total: <?= $data['competitionCount'] ?? 0; ?></p>
                 </div>
             </div>
@@ -25,7 +25,7 @@
         <div class="col-md-4">
             <div class="card text-white bg-warning mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">Achievements</h5>
+                    <h5 class="card-title">Prestasi</h5>
                     <p class="card-text">Total: <?= $data['achievementCount'] ?? 0; ?></p>
                 </div>
             </div>

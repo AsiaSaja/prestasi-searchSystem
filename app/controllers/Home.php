@@ -1,7 +1,6 @@
 <?php
 
 class Home extends Controller {
-
     protected $response;
     protected $request;
     protected $session;
@@ -18,17 +17,23 @@ class Home extends Controller {
         // Simply load the homepage view
         view('home/index');
     }
-    
-    public function search() {
-        // Retrieve input parameters safely using $_GET, and sanitize them
-        $keyword = htmlspecialchars($this->request->getParam('keyword')) ?? ''; // Sanitize
-        $category = htmlspecialchars($this->request->getParam('category')) ?? null;
 
-        // Call the search function from the loaded model
-        $results = $this->prestasiModel->search($keyword, $category);
-
-        // Pass the results to the view
-        view('home/search_results', ['results' => $results]);
+    // In Home.php controller
+    public function search() 
+    {
+        // Check if the form was submitted with a keyword
+        $keyword = isset($_POST['keyword']) ? $_POST['keyword'] : '';
+        
+        // Log the keyword for debugging
+        error_log("Search performed with keyword: " . $keyword);
+        
+        // Proceed with search if keyword exists
+        $data['searchResults'] = $this->prestasiModel->searchAchievement($keyword);
+        $data['keyword'] = $keyword;
+        
+        view('home/index', $data);
+        
     }
-}
+    
 
+}
