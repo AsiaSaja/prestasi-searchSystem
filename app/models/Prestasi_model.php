@@ -68,51 +68,55 @@ class Prestasi_model extends Model {
     // In Prestasi_model.php
 
     // In Prestasi_model.php
+// Add this to your searchAchievement method in Prestasi_model to debug:
     public function searchAchievement($keyword = '') 
     {
-        // Only proceed with search if we have a non-empty keyword
-        if (!empty(trim($keyword))) {
-            $keyword = htmlspecialchars(trim($keyword));
-            
-            $sql = "
-                SELECT 
-                    a.id,
-                    a.achievement,
-                    s.name AS student_name,
-                    c.name AS competition_name,
-                    c.year AS competition_year
-                FROM achievements a
-                LEFT JOIN students s ON a.student_id = s.id
-                LEFT JOIN competitions c ON a.competition_id = c.id
-                WHERE 
-                    a.achievement LIKE :keyword OR
-                    s.name LIKE :keyword OR
-                    c.name LIKE :keyword
-                ORDER BY c.year DESC, s.name ASC
-            ";
-            
-            try {
-                $this->db->query($sql);
-                $this->db->bind(':keyword', '%' . $keyword . '%');
-    
-                // Log the final query to check if it's properly formatted
-                error_log("Executing Query: " . $sql);
-                
-                $results = $this->db->resultSet();
-                
-                // Log the results count
-                error_log("Search Results Count: " . count($results));
-    
-                return $results;
-            } catch (Exception $e) {
-                error_log("Search error: " . $e->getMessage());
-                return [];
-            }
+        error_log("=== Search Achievement Called ===");
+        error_log("Raw keyword: " . $keyword);
+        
+        if (empty(trim($keyword))) {
+            error_log("Empty keyword, returning empty array");
+            return [];
         }
         
-        return []; // Return empty array if no keyword
+        $keyword = trim($keyword);
+        
+        $sql = "
+            SELECT 
+                a.id,
+                a.achievement,
+                s.name AS student_name,
+                c.name AS competition_name,
+                c.year AS competition_year
+            FROM achievements a
+            LEFT JOIN students s ON a.student_id = s.id
+            LEFT JOIN competitions c ON a.competition_id = c.id
+            WHERE 
+                LOWER(a.achievement) LIKE LOWER(:keyword) OR
+                LOWER(s.name) LIKE LOWER(:keyword) OR
+                LOWER(c.name) LIKE LOWER(:keyword) OR
+                CAST(c.year AS CHAR) LIKE :keyword
+            ORDER BY c.year DESC, s.name ASC
+        ";
+        
+        try {
+            $this->db->query($sql);
+            $this->db->bind(':keyword', '%' . $keyword . '%');
+            
+            error_log("Executing query with keyword: %{$keyword}%");
+            
+            $results = $this->db->resultSet();
+            
+            error_log("Query results count: " . count($results));
+            error_log("Query results: " . print_r($results, true));
+            
+            return $results;
+        } catch (Exception $e) {
+            error_log("Database error: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+            return [];
+        }
     }
-    
 
     // Helper method to log searches
     private function logSearch($keyword, $resultCount) 

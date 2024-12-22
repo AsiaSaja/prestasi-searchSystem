@@ -25,10 +25,10 @@ class Database {
         }
     }
 
-    public function query($query)
-    {
-        $this->stmt = $this->dbh->prepare($query);
-    } 
+    public function query($sql) {
+        error_log("Executing query: " . $sql);
+        $this->stmt = $this->dbh->prepare($sql);
+    }
 
     public function bind($param, $value, $type = null)
     {
@@ -47,7 +47,7 @@ class Database {
                     $type = PDO::PARAM_STR;
             }
         }
-
+        error_log("Binding parameter $param with value $value");
         $this->stmt->bindValue($param, $value, $type);
     }
 
@@ -59,7 +59,9 @@ class Database {
     public function resultSet()
     {
         $this->execute();   
-        return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+        error_log("Query returned " . count($result) . " rows");
+        return $result;
     }
 
     public function single()

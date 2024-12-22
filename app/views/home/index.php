@@ -1,18 +1,34 @@
-<?php
-// Debugging the search results
+<!-- <?php
+// Debug section
+$available_vars = get_defined_vars();
+error_log("=== View Variables ===");
+error_log(print_r($available_vars, true));
 
-?>
+echo "<div style='background: #f8f9fa; padding: 10px; margin: 10px; border: 1px solid #ddd;'>";
+echo "<h4>Debug Information:</h4>";
+echo "Request Method: " . $_SERVER['REQUEST_METHOD'] . "<br>";
+echo "POST Data: <pre>" . print_r($_POST, true) . "</pre>";
+echo "Keyword variable exists: " . (isset($keyword) ? 'Yes - Value: ' . htmlspecialchars($keyword) : 'No') . "<br>";
+echo "SearchResults variable exists: " . (isset($searchResults) ? 'Yes - Count: ' . count($searchResults) : 'No') . "<br>";
+
+if (isset($searchResults) && is_array($searchResults)) {
+    echo "First result: <pre>";
+    print_r(reset($searchResults));
+    echo "</pre>";
+}
+echo "</div>";
+?> -->
 
 <!-- Your existing HTML below -->
 
 
 <?php require_once '../app/views/templates/user-header.php'; 
 
-if (isset($searchResults)) {
-    echo "<pre>";
-    print_r($searchResults);
-    echo "</pre>";
-}
+// if (isset($searchResults)) {
+//     echo "<pre>";
+//     print_r($searchResults);
+//     echo "</pre>";
+// }
 ?>
 
 <div class="container mt-5">

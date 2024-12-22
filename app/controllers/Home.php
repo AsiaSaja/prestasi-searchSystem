@@ -15,25 +15,22 @@ class Home extends Controller {
 
     public function index() {
         // Simply load the homepage view
-        view('home/index');
+        $data = [];
+        view('home/index', $data);
     }
 
     // In Home.php controller
     public function search() 
     {
-        // Check if the form was submitted with a keyword
         $keyword = isset($_POST['keyword']) ? $_POST['keyword'] : '';
+        $searchResults = $this->prestasiModel->searchAchievement($keyword);
         
-        // Log the keyword for debugging
-        error_log("Search performed with keyword: " . $keyword);
-        
-        // Proceed with search if keyword exists
-        $data['searchResults'] = $this->prestasiModel->searchAchievement($keyword);
-        $data['keyword'] = $keyword;
+        $data = [
+            'keyword' => $keyword,
+            'searchResults' => $searchResults
+        ];
         
         view('home/index', $data);
-        
     }
-    
 
 }
